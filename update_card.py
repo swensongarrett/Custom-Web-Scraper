@@ -3,6 +3,15 @@ import json
 from urllib.parse import urljoin, unquote
 import re
 from typing import Optional
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+def get_env(key: str, default: str = "") -> str:
+    """Get environment variable value, returning default if not found."""
+    return os.getenv(key, default)
 
 def build_url(base: str, path: str = "") -> str:
     if not path:
@@ -12,17 +21,19 @@ def build_url(base: str, path: str = "") -> str:
 NYT_BASE_URL = "https://myaccount.nytimes.com"
 SPREEDLY_BASE_URL = "https://core.spreedly.com"
 GRAPHQL_BASE_URL = build_url(NYT_BASE_URL, "/get-started/svc/v2/graphql")
-EMAIL = ""
-PASSWORD = ""
-AUTH_TOKEN = ""
-NUMBER = ""
-VERIFICATION_VALUE = ""
-FIRST_NAME = ""
-LAST_NAME = ""
-MONTH = ""
-YEAR = ""
-ZIP = ""
-COUNTRY = ""
+EMAIL = get_env("EMAIL")
+PASSWORD = get_env("PASSWORD")
+AUTH_TOKEN = get_env("AUTH_TOKEN")
+NUMBER = get_env("NUMBER")
+VERIFICATION_VALUE = get_env("VERIFICATION_VALUE")
+FIRST_NAME = get_env("FIRST_NAME")
+LAST_NAME = get_env("LAST_NAME")
+MONTH = get_env("MONTH")
+YEAR = get_env("YEAR")
+ZIP = get_env("ZIP")
+COUNTRY = get_env("COUNTRY")
+SPREEDLY_CERTIFICATE_TOKEN = get_env("SPREEDLY_CERTIFICATE_TOKEN")
+SPREEDLY_ENVIRONMENT_KEY = get_env("SPREEDLY_ENVIRONMENT_KEY")
 
 
 def extract_next_build_id(html: str) -> Optional[str]:
@@ -150,8 +161,8 @@ print(f"Timestamp: {timestamp}")
 #Update card on Spreedly
 url = build_url(SPREEDLY_BASE_URL, "/v1/payment_methods/restricted.json?from=iframe&v=1.179")
 payload = json.dumps({
-  "certificate_token": "",
-  "environment_key": "",
+  "certificate_token": SPREEDLY_CERTIFICATE_TOKEN,
+  "environment_key": SPREEDLY_ENVIRONMENT_KEY,
   "nonce": nonce,
   "payment_method": {
     "credit_card": {
@@ -173,7 +184,7 @@ headers = {
   'content-type': 'application/json',
   'origin': 'https://core.spreedly.com',
   'referer': 'https://core.spreedly.com/v1/embedded/number-frame-1.179.html',
-  'spreedly-environment-key': ''
+  'spreedly-environment-key': SPREEDLY_ENVIRONMENT_KEY
 }
 
 
